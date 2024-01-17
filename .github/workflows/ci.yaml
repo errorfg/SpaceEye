@@ -10,11 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
+    runs-on: macos-latest
 
     steps:
       - name: Check out Git repository
@@ -58,7 +54,6 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: SpaceEye-${{ matrix.os }}
+          name: SpaceEye-mac
           path: |
             release/*.dmg
-            release/*.exe
