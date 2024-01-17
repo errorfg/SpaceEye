@@ -19,10 +19,12 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v1
+
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
@@ -43,13 +45,6 @@ jobs:
       - name: Install packages
         run: yarn install --frozen-lockfile --prefer-offline
 
-      - name: Prepare for app notarization
-        if: startsWith(matrix.os, 'macos')
-        # Import Apple API key for app notarization on macOS
-        run: |
-          mkdir -p ~/private_keys/
-          echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
-
       - name: Build
         run: npx gulp build-ci
 
@@ -57,14 +52,9 @@ jobs:
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.github_token }}
-          mac_certs: ${{ secrets.mac_certs }}
-          mac_certs_password: ${{ secrets.mac_certs_password }}
           # Release on version tag
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           skip_build: true
-        env:
-          API_KEY_ID: ${{ secrets.api_key_id }}
-          API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
 
       - uses: actions/upload-artifact@v2
         with:
